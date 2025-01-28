@@ -9,6 +9,8 @@ import slugify from 'slugify';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { TelegramService } from '../social/telegram/telegram.service';
 import { ConfigService } from '@nestjs/config';
+import { FacebookService } from 'src/social/facebook/facebook.service';
+import { TwitterService } from 'src/social/twitter/twitter.service';
 
 @Injectable()
 export class ArticlesService {
@@ -20,6 +22,8 @@ export class ArticlesService {
     private readonly imageUploadService: ImageUploadService,
     private readonly telegramService: TelegramService,
     private readonly configService: ConfigService,
+    private readonly facebookService: FacebookService,
+    private readonly twitterService: TwitterService,
 
   ) { }
 
@@ -95,7 +99,7 @@ export class ArticlesService {
 
       // Crear nuevo registro
       try {
-        const newJob = await this.articleModel.create({
+        const article = await this.articleModel.create({
           ...createArticleDto,
           imgUrl: imageUrl,
           videoUrl: videoUrl,
@@ -105,14 +109,37 @@ export class ArticlesService {
 
       // Publicar en Telegram
       try {
-        const telegramText = newJob.title;
-        const telegramSlug = newJob.slug;
+        const telegramText = article.title;
+        const telegramSlug = article.slug;
         await this.telegramService.sendArticleToChannel(telegramText, telegramSlug);
       } catch (telegramError) {
         this.logger.error('Error posting to Telegram', telegramError);
       }
 
-        return newJob;
+      // Publicar en Facebook
+      try {
+        const shareableLink = `${this.frontendUrl}/news/${article.slug}`;
+        // Publicar en Facebook usando el enlace enriquecido
+        await this.facebookService.postToFacebook(
+          shareableLink
+        );
+    
+        this.logger.log('News posted to Facebook successfully');
+      } catch (error) {
+        this.logger.error('Error posting to Facebook:', error.message);
+      }
+
+      // Publicar en Twitter 
+
+      try {
+        const tweetText = article.title;
+        const tweetUrl = `https://alertatrabajo.com/articles/${article.slug}`;
+        await this.twitterService.postTweet({ text: tweetText, url: tweetUrl });
+      } catch (twitterError) {
+        this.logger.error('Error posting tweet', twitterError);
+      }
+
+        return article;
       } catch (error) {
         if (error.code === 11000) {
           throw new BadRequestException(`Article exists in db ${JSON.stringify(error.keyValue)}`);

@@ -29,10 +29,10 @@ export class FacebookService {
     }
   }
 
-  async postToFacebook(message: string, link: string): Promise<any> {
+  async postToFacebook( link: string): Promise<any> {
     try {
       const url = `https://graph.facebook.com/${this.API_VERSION}/${this.PAGE_ID}/feed`;
-      const data = { message, link, access_token: this.ACCESS_TOKEN };
+      const data = {  link, access_token: this.ACCESS_TOKEN };
   
       const response = await axios.post(url, data);
       this.logger.log(`Successfully posted to Facebook: ${JSON.stringify(response.data)}`);

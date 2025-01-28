@@ -4,8 +4,9 @@ import { ArticlesController } from './articles.controller';
 import { Article, ArticleSchema } from './entities/article.entity.schema';
 import { ImageUploadModule } from 'src/images/image-upload.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TelegramService } from 'src/social/telegram/telegram.service';
 import { TelegramModule } from 'src/social/telegram/telegram.module';
+import { FacebookModule } from 'src/social/facebook/facebook.module';
+import { TwitterModule } from 'src/social/twitter/twitter.module';
 
 @Module({
   controllers: [ArticlesController],
@@ -18,7 +19,9 @@ import { TelegramModule } from 'src/social/telegram/telegram.module';
       }
     ]),
     ImageUploadModule,
-    TelegramModule
+    TelegramModule,
+    FacebookModule,
+    TwitterModule
   ]
 
 })

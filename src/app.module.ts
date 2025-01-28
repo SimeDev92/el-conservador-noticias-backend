@@ -7,6 +7,7 @@ import databaseConfig, { CONFIG_DATABASE } from './config/database.config';
 import { ImageUploadModule } from './images/image-upload.module';
 import { TelegramModule } from './social/telegram/telegram.module';
 import { TwitterModule } from './social/twitter/twitter.module';
+import { FacebookModule } from './social/facebook/facebook.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { TwitterModule } from './social/twitter/twitter.module';
     ArticlesModule,
     ImageUploadModule,
     TwitterModule,
-    TelegramModule
+    TelegramModule,
+    FacebookModule
   ],
   controllers: [],
   providers: [],

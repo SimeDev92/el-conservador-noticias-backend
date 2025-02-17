@@ -56,3 +56,4 @@ export class Article extends Document {
 
 export const ArticleSchema = SchemaFactory.createForClass(Article);
 
+ArticleSchema.index({ title: 'text', subtitle: 'text', content: 'text', tags: 'text' });

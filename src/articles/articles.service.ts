@@ -133,7 +133,7 @@ export class ArticlesService {
 
       try {
         const tweetText = article.title;
-        const tweetUrl = `https://alertatrabajo.com/articles/${article.slug}`;
+        const tweetUrl = `https://elconservadornoticias.com/articles/${article.slug}`;
         await this.twitterService.postTweet({ text: tweetText, url: tweetUrl });
       } catch (twitterError) {
         this.logger.error('Error posting tweet', twitterError);
@@ -152,17 +152,23 @@ export class ArticlesService {
     }
 
   }
-  // TODO: Implement method to publish social media { Twiiter, Telegram, Facebook }
 
-  findAll(paginationDto: PaginationDto) {
-
-    const { limit = 10, offset = 0 } = paginationDto;
-
-    return this.articleModel.find()
+  async findAll(paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0, category } = paginationDto;
+  
+    let query = this.articleModel.find();
+  
+    if (category) {
+      query = query.where('category').equals(category);
+    }
+  
+    return query
       .limit(limit)
       .skip(offset)
-      .select('-__v');
+      .select('-__v')
+      .sort({ createdAt: +1 });
   }
+  
 
   async findOne(term: string) {
 
@@ -224,8 +230,6 @@ export class ArticlesService {
     return slugify(title, { lower: true, strict: true, trim: true });
   }
 
-  // Increment Views
-
   async incrementViews(id: string): Promise<Article> {
     const updatedArticle = await this.articleModel.findByIdAndUpdate(
       id,
@@ -239,4 +243,34 @@ export class ArticlesService {
 
     return updatedArticle;
   }
+
+  async searchArticles(query: string): Promise<Article[]> {
+    const articles = await this.articleModel.find(
+      { $text: { $search: query } },
+      { score: { $meta: 'textScore' } }
+    )
+      .sort({ score: { $meta: 'textScore' } })
+      .exec();
+
+    if (!articles || articles.length === 0) {
+      throw new NotFoundException(`No news found for the search query: ${query}`);
+    }
+    return articles;
+  }
+
+  async getArticlesByDate(date: string): Promise<Article[]> {
+    const targetDate = new Date(date);
+    const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+
+    const articles = await this.articleModel.find({
+      date: { $gte: startOfDay, $lte: endOfDay }
+    }).sort({ date: -1 }).exec();
+
+    if (!articles || articles.length === 0) {
+      throw new NotFoundException(`No news found for the date ${date}`);
+    }
+    return articles;
+  }
+
 }

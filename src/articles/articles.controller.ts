@@ -24,11 +24,21 @@ export class ArticlesController {
   findAll( @Query() paginationDto: PaginationDto ) {
     return this.articlesService.findAll(paginationDto);
   }
+  @Get('search')
+  async searchNews(@Query('query') query: string) {
+    return this.articlesService.searchArticles(query);
+  }
 
   @Get(':term')
   findOne(@Param('term') term: string) {
     return this.articlesService.findOne( term )
   }
+
+  @Get('date/:date')
+  getNewsByDate(@Param('date') date: string) {
+    return this.articlesService.getArticlesByDate(date);
+  }
+
 
   @Patch(':term')
   update(@Param('term') term: string, @Body() updateArticleDto: UpdateArticleDto) {
@@ -44,13 +54,6 @@ export class ArticlesController {
   async incrementViews(@Param('id') id: string) {
     return this.articlesService.incrementViews(id);
   }
-
-  // find by term
-
   // find by date
 
-
-  // Get all news by Category paginated
-
-  
 }

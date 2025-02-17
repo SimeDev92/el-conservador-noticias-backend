@@ -1,4 +1,4 @@
-export enum ArticleCategory{
+export enum ArticleCategory {
 
     POLITICS = 'Politics',
     ECONOMY = 'Economy',
@@ -7,4 +7,5 @@ export enum ArticleCategory{
     CULTURE = 'Culture',
     SPORTS = 'Sports',
     OPINION = 'Opinion',
+    INTERNATIONAL = 'International'
 }

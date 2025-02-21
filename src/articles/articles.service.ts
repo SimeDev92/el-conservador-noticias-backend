@@ -11,7 +11,6 @@ import { TelegramService } from '../social/telegram/telegram.service';
 import { ConfigService } from '@nestjs/config';
 import { FacebookService } from '../social/facebook/facebook.service';
 import { TwitterService } from '../social/twitter/twitter.service';
-import { Category } from './enums/news-categories.enum';
 
 @Injectable()
 export class ArticlesService {

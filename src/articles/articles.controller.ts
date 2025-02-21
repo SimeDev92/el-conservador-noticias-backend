@@ -4,7 +4,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { PaginationDto } from '../common/dto/pagination.dto';
-import { SearchDto } from 'src/common/dto/search.dto';
+import { SearchDto } from '../common/dto/search.dto';
 
 @Controller('articles')
 export class ArticlesController {

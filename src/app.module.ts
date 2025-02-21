@@ -8,6 +8,7 @@ import { ImageUploadModule } from './images/image-upload.module';
 import { TelegramModule } from './social/telegram/telegram.module';
 import { TwitterModule } from './social/twitter/twitter.module';
 import { FacebookModule } from './social/facebook/facebook.module';
+import { MigrationModule } from './migration-news/migration-news.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { FacebookModule } from './social/facebook/facebook.module';
     ImageUploadModule,
     TwitterModule,
     TelegramModule,
-    FacebookModule
+    FacebookModule,
+    MigrationModule,
   ],
   controllers: [],
   providers: [],

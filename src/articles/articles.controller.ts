@@ -3,7 +3,8 @@ import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
+import { SearchDto } from 'src/common/dto/search.dto';
 
 @Controller('articles')
 export class ArticlesController {
@@ -24,11 +25,19 @@ export class ArticlesController {
   findAll( @Query() paginationDto: PaginationDto ) {
     return this.articlesService.findAll(paginationDto);
   }
-  @Get('search')
-  async searchNews(@Query('query') query: string) {
-    return this.articlesService.searchArticles(query);
-  }
 
+  @Get('category')
+  findAllByCategory(@Query() paginationDto: PaginationDto) {
+    return this.articlesService.findAllByCategory(paginationDto);
+  }
+  
+  @Get('search')
+  async searchNews(@Query() searchDto: SearchDto) {
+    const { query, ...paginationDto } = searchDto;
+    return this.articlesService.searchArticles(query, paginationDto);
+  }
+  
+  
   @Get(':term')
   findOne(@Param('term') term: string) {
     return this.articlesService.findOne( term )
@@ -54,6 +63,5 @@ export class ArticlesController {
   async incrementViews(@Param('id') id: string) {
     return this.articlesService.incrementViews(id);
   }
-  // find by date
 
 }

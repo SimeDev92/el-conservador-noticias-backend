@@ -4,13 +4,14 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 import { Article } from './entities/article.entity.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
-import { ImageUploadService } from 'src/images/image-upload.service';
+import { ImageUploadService } from '../images/image-upload.service';
 import slugify from 'slugify';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 import { TelegramService } from '../social/telegram/telegram.service';
 import { ConfigService } from '@nestjs/config';
-import { FacebookService } from 'src/social/facebook/facebook.service';
-import { TwitterService } from 'src/social/twitter/twitter.service';
+import { FacebookService } from '../social/facebook/facebook.service';
+import { TwitterService } from '../social/twitter/twitter.service';
+import { Category } from './enums/news-categories.enum';
 
 @Injectable()
 export class ArticlesService {
@@ -118,7 +119,7 @@ export class ArticlesService {
 
       // Publicar en Facebook
       try {
-        const shareableLink = `${this.frontendUrl}/news/${article.slug}`;
+        const shareableLink = `${this.frontendUrl}/noticias/${article.slug}`;
         // Publicar en Facebook usando el enlace enriquecido
         await this.facebookService.postToFacebook(
           shareableLink
@@ -133,7 +134,7 @@ export class ArticlesService {
 
       try {
         const tweetText = article.title;
-        const tweetUrl = `https://elconservadornoticias.com/articles/${article.slug}`;
+        const tweetUrl = `https://elconservadornoticias.com/noticias/${article.slug}`;
         await this.twitterService.postTweet({ text: tweetText, url: tweetUrl });
       } catch (twitterError) {
         this.logger.error('Error posting tweet', twitterError);
@@ -154,6 +155,18 @@ export class ArticlesService {
   }
 
   async findAll(paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto;
+  
+    let query = this.articleModel.find();
+  
+    return query
+      .limit(limit)
+      .skip(offset)
+      .select('-__v')
+      .sort({ date: -1 });
+  }
+
+  async findAllByCategory(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0, category } = paginationDto;
   
     let query = this.articleModel.find();
@@ -166,7 +179,7 @@ export class ArticlesService {
       .limit(limit)
       .skip(offset)
       .select('-__v')
-      .sort({ createdAt: +1 });
+      .sort({ date: -1 });
   }
   
 
@@ -244,19 +257,38 @@ export class ArticlesService {
     return updatedArticle;
   }
 
-  async searchArticles(query: string): Promise<Article[]> {
-    const articles = await this.articleModel.find(
-      { $text: { $search: query } },
-      { score: { $meta: 'textScore' } }
-    )
-      .sort({ score: { $meta: 'textScore' } })
-      .exec();
-
-    if (!articles || articles.length === 0) {
-      throw new NotFoundException(`No news found for the search query: ${query}`);
+  async searchArticles(query: string, paginationDto: PaginationDto): Promise<{ articles: Article[], total: number }> {
+    const { limit = 9, offset = 0 } = paginationDto;
+  
+    try {
+      const [articles, total] = await Promise.all([
+        this.articleModel.find(
+          { $text: { $search: query } },
+          { score: { $meta: 'textScore' } }
+        )
+          .sort({ score: { $meta: 'textScore' } })
+          .skip(offset)
+          .limit(limit)
+          .lean()
+          .exec(),
+        this.articleModel.countDocuments({ $text: { $search: query } })
+      ]);
+  
+      if (articles.length === 0) {
+        throw new NotFoundException(`No news found for the search query: ${query}`);
+      }
+  
+      return { articles, total };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      // Log the error here if needed
+      throw new InternalServerErrorException('An error occurred while searching for articles');
     }
-    return articles;
   }
+  
+  
 
   async getArticlesByDate(date: string): Promise<Article[]> {
     const targetDate = new Date(date);

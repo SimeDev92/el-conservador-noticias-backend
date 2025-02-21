@@ -28,7 +28,7 @@ export class TelegramService {
 
       // Método para publicar un artículo en el canal de Telegram
       sendArticleToChannel(title: string, slug: string) {
-        const articleUrl = `https://elconservadornoticias.com/news/${slug}`;
+        const articleUrl = `https://elconservadornoticias.com/noticias/${slug}`;
         const message = ` ${articleUrl}`;
         this.sendMessageToChannel(this.telegramChannelId, message);
       }

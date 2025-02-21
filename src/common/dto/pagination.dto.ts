@@ -1,6 +1,6 @@
-import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ArticleCategory } from 'src/articles/enums/article-category.enum';
+import { ArticleCategory } from '../../articles/enums/article-category.enum';
 
 export class PaginationDto {
   @IsOptional()

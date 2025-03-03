@@ -6,8 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: ['http://localhost:4200', 'https://elconservadornoticias.com'],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',  // Agregar OPTIONS
+    origin: ['http://localhost:4200', 'https://elconservadornoticias.com', 'https://subnorpanel.netlify.app'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,
   });

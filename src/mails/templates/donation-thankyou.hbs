@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gracias por tu donación</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 2px solid #c60b1e;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            max-width: 200px;
+        }
+        h1 {
+            color: #c60b1e;
+            font-size: 24px;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ffc400;
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{{logoUrl}}" alt="El Conservador Logo" class="logo">
+            <h1>Gracias por tu donación</h1>
+        </div>
+        <div class="content">
+            <p>Estimado/a {{ nombre }},</p>
+            <p>Queremos agradecerte tu generosa donación a <strong>El Conservador</strong>. Tu apoyo es fundamental para que sigamos defendiendo los valores de nuestra querida España.</p>
+            <p>Gracias a tu colaboración, continuaremos ofreciendo noticias veraces y análisis profundos con una perspectiva clara y firme.</p>
+        </div>
+        <div class="footer">
+            <p>Que Dios bendiga a España y a ti, {{ nombre }}.</p>
+            <p>El equipo de El Conservador</p>
+        </div>
+    </div>
+</body>
+</html>

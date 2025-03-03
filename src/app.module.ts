@@ -8,6 +8,7 @@ import { ImageUploadModule } from './images/image-upload.module';
 import { TelegramModule } from './social/telegram/telegram.module';
 import { TwitterModule } from './social/twitter/twitter.module';
 import { FacebookModule } from './social/facebook/facebook.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { FacebookModule } from './social/facebook/facebook.module';
       },
       inject: [ConfigService],
     }),
+    AuthModule,
     ArticlesModule,
     ImageUploadModule,
     TwitterModule,

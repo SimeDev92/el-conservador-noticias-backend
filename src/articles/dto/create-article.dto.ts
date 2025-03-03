@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsPositive, IsString, IsUrl, Matches, MaxLength, Min, MinLength } from "class-validator";
+import { Allow, IsArray, IsDateString, IsEnum, IsInt, IsNumber, IsOptional, IsPositive, IsString, IsUrl, Matches, MaxLength, Min, MinLength } from "class-validator";
 import { ArticleCategory } from "../enums/article-category.enum";
 import { ArticleStatus } from "../enums/article-status.enum";
 import { ArticleType } from "../enums/article-type.enum";
@@ -27,11 +27,9 @@ export class CreateArticleDto {
     author: string;
 
     @IsString()
-    @MinLength(50, {
-        message: 'Content is too short',
-    })
+    @Allow() // Permite cualquier string, incluyendo HTML
     content: string;
-
+    
     @IsOptional()
     @IsUrl({}, { message: 'Image URL must be a valid URL' })
     imgUrl: string;

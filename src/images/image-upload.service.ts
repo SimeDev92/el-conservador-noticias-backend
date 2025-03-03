@@ -56,9 +56,19 @@ export class ImageUploadService {
   async getAllImages(page: number = 1, limit: number = 20): Promise<{ images: Image[], total: number }> {
     const skip = (page - 1) * limit;
     const [images, total] = await Promise.all([
-      this.imageModel.find().skip(skip).limit(limit).exec(),
+      this.imageModel.find()
+      .sort({ uploadDate: -1 })
+      .skip(skip).limit(limit).exec(),
       this.imageModel.countDocuments()
     ]);
     return { images, total };
+  }
+
+  async deleteImage(publicId: string): Promise<void> {
+    // Elimina la imagen de Cloudinary
+    await cloudinary.uploader.destroy(publicId);
+
+    // Elimina la imagen de la base de datos
+    await this.imageModel.findOneAndDelete({ publicId }).exec();
   }
 }

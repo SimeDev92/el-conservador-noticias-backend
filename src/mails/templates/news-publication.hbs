@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Noticia Ha Sido Publicada</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            max-width: 150px;
+        }
+        h1 {
+            color: #c60b1e;
+            font-size: 22px;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ffc400;
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{{logoUrl}}" alt="El Conservador Logo" class="logo">
+            <h1>¡Tu Noticia Ha Sido Publicada!</h1>
+        </div>
+        <div class="content">
+            <p>Hola {{ nombre }},</p>
+            <p>Nos alegra informarte que tu noticia ha sido publicada en la sección de opinión de <strong>El Conservador</strong>. Puedes verla en el siguiente enlace:</p>
+            <p><a href="{{newsLink}}" class="cta-button">Ver Noticia</a></p>
+            <br>
+            <p>Gracias por contribuir con tu voz en nuestra plataforma.</p>
+        </div>
+        <div class="footer">
+            <p>El equipo de El Conservador</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a El Conservador</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 2px solid #c60b1e;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            max-width: 200px;
+        }
+        h1 {
+            color: #c60b1e;
+            font-size: 24px;
+        }
+        .content {
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ffc400;
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{{logoUrl}}" alt="El Conservador Logo" class="logo">
+            <h1>Bienvenido a El Conservador</h1>
+        </div>
+        <div class="content">
+            <p>Estimado/a {{ nombre }},</p>
+            <p>Es un honor darle la bienvenida a <strong>El Conservador</strong>, el baluarte de los valores tradicionales y la defensa de nuestra querida España.</p>
+            <p>Como nuevo miembro de nuestra comunidad, usted se une a un grupo selecto de patriotas comprometidos con:</p>
+            <ul>
+                <li>La defensa de nuestra gloriosa nación y su rica historia</li>
+                <li>La preservación de nuestras tradiciones y cultura</li>
+                <li>La promoción de políticas que fortalezcan la familia y la sociedad</li>
+                <li>La lucha contra el adoctrinamiento y la degeneración moral</li>
+            </ul>
+            <p>En El Conservador, encontrará noticias veraces, análisis profundos y opiniones que reflejan el verdadero sentir de la España que no se rinde.</p>
+            <p>Le invitamos a explorar nuestro contenido y a participar activamente en nuestra comunidad.</p>
+            <p style="text-align: center;">
+                <a href="{{frontendUrl}}" class="cta-button">Descubra Nuestras Noticias</a>
+            </p>
+        </div>
+        <div class="footer">
+            <p>Que Dios bendiga a España y a usted, {{ nombre }}.</p>
+            <p>El equipo de El Conservador</p>
+            <p><small>Si no desea recibir más correos, puede darse de baja <a href="{{unsubscribeLink}}">aquí</a>.</small></p>
+        </div>
+    </div>
+</body>
+</html>

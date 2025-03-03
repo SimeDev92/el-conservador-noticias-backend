@@ -1,4 +1,4 @@
-import { Controller, Post, Get, UseInterceptors, UploadedFile, Body, Query } from '@nestjs/common';
+import { Controller, Post, Get, UseInterceptors, UploadedFile, Body, Query, Delete, Param } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ImageUploadService } from './image-upload.service';
 
@@ -41,4 +41,14 @@ export class ImageUploadController {
   ) {
     return this.imageUploadService.getAllImages(page, limit);
   }
+  
+  @Delete('image/:publicId')
+async deleteImage(@Param('publicId') publicId: string) {
+  try {
+    await this.imageUploadService.deleteImage(publicId);
+    return { message: 'Imagen eliminada correctamente' };
+  } catch (error) {
+    throw new Error('Error eliminando la imagen');
+  }
+}
 }

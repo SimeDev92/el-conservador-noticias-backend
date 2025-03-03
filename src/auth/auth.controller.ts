@@ -6,7 +6,7 @@ import { AuthGuard } from './guards/auth/auth.guard';
 import { LoginResponse } from './interfaces/login-response';
 import { User } from './entities/user.entity.schema';
 import { OriginGuard } from './guards/auth/origin.guard';
-import { ApiKeyGuard } from 'src/api-key/api-key.guard';
+import { ApiKeyGuard } from '../api-key/api-key.guard';
 import { SuperAdminGuard } from './guards/auth/super-admin.guard';
 import { CreateSuperAdminDto } from './dto/create-super-admin.dto';
 

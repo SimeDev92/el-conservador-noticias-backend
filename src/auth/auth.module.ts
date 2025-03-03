@@ -7,7 +7,7 @@ import { AuthController } from './auth.controller';
 import { User, UserSchema } from './entities/user.entity.schema';
 import { SuperAdmin, SuperAdminSchema } from './entities/super-admin.entity.schema';
 import { SuperAdminGuard } from '../auth/guards/auth/super-admin.guard';
-import { MailsModule } from 'src/mails/mails.module';
+import { MailsModule } from '../mails/mails.module';
 
 @Module({
   controllers: [AuthController],

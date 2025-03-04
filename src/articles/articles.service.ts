@@ -74,84 +74,74 @@ export class ArticlesService {
     try {
       let videoUrl = createArticleDto.videoUrl || '';
       let imageUrl = createArticleDto.imgUrl || '';
-
-      // Subir imagen
-      if (file) {
-        const uploadResult = await this.imageUploadService.uploadFile(file);
-        imageUrl = uploadResult.url;
-      }
-
-      // Subir video
-      if (videoFile) {
-        const videoResult = await this.imageUploadService.uploadFile(videoFile, undefined, 'video');
-        videoUrl = videoResult.url;
-      }
-
+  
+      // Subir imagen y video en paralelo si existen
+      const [imageResult, videoResult] = await Promise.all([
+        file ? this.imageUploadService.uploadFile(file) : Promise.resolve(null),
+        videoFile ? this.imageUploadService.uploadFile(videoFile, undefined, 'video') : Promise.resolve(null)
+      ]);
+  
+      if (imageResult) imageUrl = imageResult.url;
+      if (videoResult) videoUrl = videoResult.url;
+  
       // Generar slug
       let slug = this.generateSlug(createArticleDto.title);
       const existing = await this.articleModel.findOne({ slug });
       if (existing) {
         slug = `${slug}-${Date.now()}`;
       }
-
+  
       // Generar etiquetas automáticas
       const tags = this.generateTags(createArticleDto);
-
+  
       // Crear nuevo registro
-      try {
-        const article = await this.articleModel.create({
-          ...createArticleDto,
-          imgUrl: imageUrl,
-          videoUrl: videoUrl,
-          slug,
-          tags,
-        });
-
-      // Publicar en Telegram
-      try {
-        const telegramText = article.title;
-        const telegramSlug = article.slug;
-        await this.telegramService.sendArticleToChannel(telegramText, telegramSlug);
-      } catch (telegramError) {
-        this.logger.error('Error posting to Telegram', telegramError);
-      }
-
-      // Publicar en Facebook
-      try {
-        const shareableLink = `${this.frontendUrl}/noticias/${article.slug}`;
-        // Publicar en Facebook usando el enlace enriquecido
-        await this.facebookService.postToFacebook(
-          shareableLink
-        );
-    
-        this.logger.log('News posted to Facebook successfully');
-      } catch (error) {
-        this.logger.error('Error posting to Facebook:', error.message);
-      }
-
-      // Publicar en Twitter 
-
-      try {
-        const tweetText = article.title;
-        const tweetUrl = `https://elconservadornoticias.com/noticias/${article.slug}`;
-        await this.twitterService.postTweet({ text: tweetText, url: tweetUrl });
-      } catch (twitterError) {
-        this.logger.error('Error posting tweet', twitterError);
-      }
-
-        return article;
-      } catch (error) {
-        if (error.code === 11000) {
-          throw new BadRequestException(`Article exists in db ${JSON.stringify(error.keyValue)}`);
-        }
-        console.log(error);
-        throw new InternalServerErrorException(`Can't create New - Check server logs`);
-      }
+      const article = await this.articleModel.create({
+        ...createArticleDto,
+        imgUrl: imageUrl,
+        videoUrl: videoUrl,
+        slug,
+        tags,
+      });
+  
+      // Iniciar proceso asíncrono para publicar en redes sociales
+      this.publishToSocialMediaAsync(article);
+  
+      return article;
     } catch (error) {
-      throw new InternalServerErrorException(`Error during creation: ${error.message}`);
+      if (error.code === 11000) {
+        throw new BadRequestException(`Article exists in db ${JSON.stringify(error.keyValue)}`);
+      }
+      this.logger.error('Error creating article', error);
+      throw new InternalServerErrorException(`Can't create New - Check server logs`);
     }
-
   }
+  
+  private async publishToSocialMediaAsync(article: Article) {
+    try {
+      // Publicar en Telegram
+      await this.telegramService.sendArticleToChannel(article.title, article.slug);
+    } catch (error) {
+      this.logger.error('Error posting to Telegram', error);
+    }
+  
+    try {
+      // Publicar en Facebook
+      const shareableLink = `${this.frontendUrl}/noticias/${article.slug}`;
+      await this.facebookService.postToFacebook(shareableLink);
+    } catch (error) {
+      this.logger.error('Error posting to Facebook', error);
+    }
+  
+    try {
+      // Publicar en Twitter
+      const tweetText = article.title;
+      const tweetUrl = `https://elconservadornoticias.com/noticias/${article.slug}`;
+      await this.twitterService.postTweet({ text: tweetText, url: tweetUrl });
+    } catch (error) {
+      this.logger.error('Error posting tweet', error);
+    }
+  }
+  
 
   async findAll(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;

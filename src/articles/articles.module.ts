@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TelegramModule } from '../social/telegram/telegram.module';
 import { FacebookModule } from '../social/facebook/facebook.module';
 import { TwitterModule } from '../social/twitter/twitter.module';
+import { SitemapModule } from '../sitemap/sitemap.module';
 
 @Module({
   controllers: [ArticlesController],
@@ -21,7 +22,8 @@ import { TwitterModule } from '../social/twitter/twitter.module';
     ImageUploadModule,
     TelegramModule,
     FacebookModule,
-    TwitterModule
+    TwitterModule,
+    SitemapModule
   ]
 
 })

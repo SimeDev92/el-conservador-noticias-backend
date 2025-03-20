@@ -11,6 +11,7 @@ import { TelegramService } from '../social/telegram/telegram.service';
 import { ConfigService } from '@nestjs/config';
 import { FacebookService } from '../social/facebook/facebook.service';
 import { TwitterService } from '../social/twitter/twitter.service';
+import { SitemapService } from '../sitemap/sitemap.service';
 
 @Injectable()
 export class ArticlesService {
@@ -24,6 +25,7 @@ export class ArticlesService {
     private readonly configService: ConfigService,
     private readonly facebookService: FacebookService,
     private readonly twitterService: TwitterService,
+    private readonly sitemapService: SitemapService,
 
   ) { }
 
@@ -103,6 +105,9 @@ export class ArticlesService {
         tags,
       });
   
+      // Actualizar el sitemap de Google News
+      await this.sitemapService.updateNewsSitemap();
+  
       // Iniciar proceso asíncrono para publicar en redes sociales
       this.publishToSocialMediaAsync(article);
   
@@ -115,7 +120,7 @@ export class ArticlesService {
       throw new InternalServerErrorException(`Can't create New - Check server logs`);
     }
   }
-  
+ 
   private async publishToSocialMediaAsync(article: Article) {
     try {
       // Publicar en Telegram
@@ -123,7 +128,7 @@ export class ArticlesService {
     } catch (error) {
       this.logger.error('Error posting to Telegram', error);
     }
-  
+
     try {
       // Publicar en Facebook
       const shareableLink = `${this.frontendUrl}/noticias/${article.slug}`;
@@ -131,7 +136,7 @@ export class ArticlesService {
     } catch (error) {
       this.logger.error('Error posting to Facebook', error);
     }
-  
+
     try {
       // Publicar en Twitter
       const tweetText = article.title;
@@ -141,13 +146,13 @@ export class ArticlesService {
       this.logger.error('Error posting tweet', error);
     }
   }
-  
+
 
   async findAll(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
-  
+
     let query = this.articleModel.find();
-  
+
     return query
       .limit(limit)
       .skip(offset)
@@ -157,20 +162,20 @@ export class ArticlesService {
 
   async findAllByCategory(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0, category } = paginationDto;
-  
+
     let query = this.articleModel.find();
-  
+
     if (category) {
       query = query.where('category').equals(category);
     }
-  
+
     return query
       .limit(limit)
       .skip(offset)
       .select('-__v')
       .sort({ date: -1 });
   }
-  
+
 
   async findOne(term: string) {
 
@@ -248,7 +253,7 @@ export class ArticlesService {
 
   async searchArticles(query: string, paginationDto: PaginationDto): Promise<{ articles: Article[], total: number }> {
     const { limit = 9, offset = 0 } = paginationDto;
-  
+
     try {
       const [articles, total] = await Promise.all([
         this.articleModel.find(
@@ -262,11 +267,11 @@ export class ArticlesService {
           .exec(),
         this.articleModel.countDocuments({ $text: { $search: query } })
       ]);
-  
+
       if (articles.length === 0) {
         throw new NotFoundException(`No news found for the search query: ${query}`);
       }
-  
+
       return { articles, total };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -276,8 +281,7 @@ export class ArticlesService {
       throw new InternalServerErrorException('An error occurred while searching for articles');
     }
   }
-  
-  
+
 
   async getArticlesByDate(date: string): Promise<Article[]> {
     const targetDate = new Date(date);

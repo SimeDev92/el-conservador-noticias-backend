@@ -9,6 +9,7 @@ import { TelegramModule } from './social/telegram/telegram.module';
 import { TwitterModule } from './social/twitter/twitter.module';
 import { FacebookModule } from './social/facebook/facebook.module';
 import { AuthModule } from './auth/auth.module';
+import { SitemapModule } from './sitemap/sitemap.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AuthModule } from './auth/auth.module';
     TwitterModule,
     TelegramModule,
     FacebookModule,
+    SitemapModule,
   ],
   controllers: [],
   providers: [],

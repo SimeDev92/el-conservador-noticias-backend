@@ -1,7 +1,7 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -27,6 +27,7 @@ export class SitemapService {
     private readonly httpService: HttpService,
   ) {}
 
+  // Método para escapar caracteres especiales en XML
   private escapeXml(unsafe: string): string {
     return unsafe.replace(/[<>&'"]/g, (c) => {
       switch (c) {
@@ -40,12 +41,14 @@ export class SitemapService {
     });
   }
 
+  // Método para validar el slug de la URL
   private validateSlug(slug: string): string {
     return encodeURIComponent(slug)
       .replace(/%(23|2C|2F|3F|5C)/g, '')
       .replace(/['"]/g, '');
   }
 
+  // Método para generar el sitemap fallback si no hay artículos
   private generateFallbackSitemap(): string {
     return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -56,6 +59,7 @@ export class SitemapService {
 </urlset>`;
   }
 
+  // Método para generar el sitemap principal
   async generateMainSitemap(page = 1): Promise<string> {
     try {
       const cacheKey = `main-sitemap-${page}`;
@@ -78,6 +82,7 @@ export class SitemapService {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
       articles.forEach((article) => {
+        // La prioridad varía dependiendo de la página
         const priority = Math.max(0.1, parseFloat((0.8 - (page * 0.1)).toFixed(1)));
 
         xml += `
@@ -99,6 +104,7 @@ export class SitemapService {
     }
   }
 
+  // Método para generar el sitemap de noticias
   async generateNewsSitemap(): Promise<string> {
     try {
       const cacheKey = 'news-sitemap';
@@ -146,6 +152,7 @@ export class SitemapService {
     }
   }
 
+  // Cron job para regenerar sitemaps cada 6 horas
   @Cron(CronExpression.EVERY_6_HOURS)
   async handleSitemapRegeneration() {
     this.logger.log('Regenerando sitemaps programado');
@@ -155,12 +162,13 @@ export class SitemapService {
     await this.generateNewsSitemap();
   }
 
+  // Método para obtener el número total de sitemaps
   async getTotalSitemaps(): Promise<number> {
     const totalArticles = await this.articleModel.countDocuments({ status: 'active' });
     return Math.ceil(totalArticles / this.MAX_URLS_PER_SITEMAP);
   }
 
-
+  // Método para actualizar el sitemap de noticias
   async updateNewsSitemap() {
     await this.cacheManager.del('news-sitemap');
     await this.generateNewsSitemap();
